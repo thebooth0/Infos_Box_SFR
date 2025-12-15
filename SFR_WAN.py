@@ -8,11 +8,10 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # --- Configuration ---
-GATEWAY_IP = IP
 SUMMARY_ENDPOINT = "ss-json/fgw.summary.json?bypass=1"
 
 # URL cible
-TARGET_URL = f"https://{GATEWAY_IP}/{SUMMARY_ENDPOINT}"
+TARGET_URL = f"https://{IP}/{SUMMARY_ENDPOINT}"
 
 # --- Fonction pour Extraire les Cookies (Facultatif mais robuste) ---
 
@@ -59,7 +58,7 @@ def request_summary_with_cookies(session_id, xsrf_token, target_url):
         'Accept-Encoding': 'gzip, deflate, br, zstd',
         'X-XSRF-TOKEN': xsrf_token, # L'en-tête séparé est CRITIQUE
         'Connection': 'keep-alive',
-        'Referer': f'https://{GATEWAY_IP}/index.html',
+        'Referer': f'https://{IP}/index.html',
         'Pragma': 'no-cache',
         'Cache-Control': 'no-cache'
     }
@@ -72,10 +71,6 @@ def request_summary_with_cookies(session_id, xsrf_token, target_url):
         data = response.json()
         
         print("✅ Requête réussie. Réponse JSON obtenue.")
-        
-        # 3. Recherche du Flag dans la réponse JSON
-        # La réponse que vous avez fournie NE contient PAS un flag CTF standard.
-        # Le flag pourrait être dans une clé cachée ou l'une des chaînes de valeur.
         
         print("\n--- Début de la Réponse JSON ---")
         
@@ -96,9 +91,8 @@ def request_summary_with_cookies(session_id, xsrf_token, target_url):
 
 
 # --- Exécution ---
-COOKIES_OUTPUT_STRING = cookie
 # 1. Extraction des cookies
-extracted_cookies = extract_cookies_from_output(COOKIES_OUTPUT_STRING)
+extracted_cookies = extract_cookies_from_output(cookie)
 
 if extracted_cookies:
     request_summary_with_cookies(
