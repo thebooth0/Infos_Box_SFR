@@ -70,3 +70,5 @@ Le résultat est l'affichage structuré du JSON des informations système :
     // ... (Configuration WAN/LAN/WiFi)
 }
 ```
+
+Tester sur une SFR Box 7 
