@@ -6,23 +6,17 @@ import re
 import json
 import time
 
-# Pour ignorer les avertissements SSL/TLS si vous utilisez 'verify=False'
+# Pour ignorer les avertissements SSL/TLS 
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
-# --- Configuration du Challenge ---
-GATEWAY_IP = IP
+# --- Configuration ---
 NONCE_ENDPOINT = "ss-json/fgw.nonce.json"
 LOGIN_ENDPOINT = "index.html"
-
-# Identifiants Cible (Flag)
-USERNAME = User
-PASSWORD = Password
 # ---------------------------------
 
 # --- Fonctions de Hachage Validées ---
-# Ces fonctions sont correctes, nous les conservons.
 
 def compute_hmac_sha256(key_str: str, data_str: str) -> str:
     key = key_str.encode('utf-8')
@@ -59,7 +53,6 @@ def get_nonce_in_session(ip_gateway, session):
             return data['nonce']
         
     except Exception as e:
-        # En cas d'échec, vous pouvez décommenter si vous voulez voir la cause exacte de l'échec de récupération
         # print(f"   [Erreur Nonce] : {e}")
         pass
     return None
@@ -121,7 +114,7 @@ def main_login(max_retries=5):
             print("0. Initialisation Session...")
             try:
                 # Tente de visiter la page d'accueil sans auth pour obtenir le SESSIONID
-                session.get(f"https://{GATEWAY_IP}/{LOGIN_ENDPOINT}", verify=False, timeout=2)
+                session.get(f"https://{IP}/{LOGIN_ENDPOINT}", verify=False, timeout=2)
             except requests.exceptions.RequestException:
                 pass # L'échec ici est acceptable, la session peut quand même être initialisée
             
@@ -130,7 +123,7 @@ def main_login(max_retries=5):
                  
             # 1. RÉCUPÉRATION DU NONCE (Requête 2)
             print("1. Récupération du Nonce frais (dans la session)...")
-            nonce_value = get_nonce_in_session(GATEWAY_IP, session)
+            nonce_value = get_nonce_in_session(IP, session)
             
             if not nonce_value:
                 print("   [Échec] Nonce non récupéré. Le serveur n'a peut-être pas initialisé la session.")
@@ -138,11 +131,11 @@ def main_login(max_retries=5):
                 continue
 
             # 2. CALCUL (Instantané)
-            credentials = calculate_credentials(USERNAME, PASSWORD, nonce_value)
+            credentials = calculate_credentials(User, Password, nonce_value)
             print(f"   Nonce : {nonce_value[:8]}... Digest : {credentials[:8]}...")
             
             # 3. TENTATIVE DE CONNEXION (Requête 3)
-            if attempt_login_hmac(GATEWAY_IP, credentials, session):
+            if attempt_login_hmac(IP, credentials, session):
                 return
 
             time.sleep(0.5) # Pause entre les tentatives d'initialisation de session
