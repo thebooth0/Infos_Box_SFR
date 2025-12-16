@@ -71,4 +71,4 @@ Le résultat est l'affichage structuré du JSON des informations système :
 }
 ```
 
-Tester sur une SFR Box 7 
+Testé sur une SFR Box 7 
